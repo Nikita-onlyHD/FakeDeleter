@@ -51,50 +51,29 @@ namespace FakeDeleter.ViewModels
                 }
             }
         }
-
-        private string time = string.Empty;
-        public string Time
-        {
-            get => time;
-            set
-            {
-                if (time != value)
-                {
-                    time = value;
-                    Changed(nameof(Time));
-                }
-            }
-        }
         #endregion
 
         #region Commands
         public Command LookupDirectoryCommand { get; }
         private bool IsLookupDirectoryRunning = false;
-
-        public Command RunTimerCommand { get; }
         #endregion
 
         #region Timers
         private DispatcherTimer dirsTimer;
         private DispatcherTimer filesTimer;
-        private DispatcherTimer countDownTimer;
         #endregion
 
         public MainViewModel()
         {
             dirsTimer = new();
             filesTimer = new();
-            countDownTimer = new();
 
             dirsTimer.Interval = TimeSpan.FromMilliseconds(20);
             filesTimer.Interval = TimeSpan.FromMilliseconds(20);
-            countDownTimer.Interval = TimeSpan.FromSeconds(1);
 
             LookupDirectoryCommand = new(async (_) => await LookupDirectoryAsync(), (_) => !IsLookupDirectoryRunning);
-            RunTimerCommand = new((_) => RunTimer(), (_) => true);
 
             LookupDirectoryCommand.Execute(null);
-            RunTimerCommand.Execute(null);
         }
 
         private async Task LookupDirectoryAsync()
@@ -151,21 +130,6 @@ namespace FakeDeleter.ViewModels
             };
 
             dirsTimer.Start();
-        }
-
-        private void RunTimer()
-        {
-            DateTime time = new(2000, 1, 1, 0, 5, 0);
-
-            Time = time.ToString("mm:ss");
-
-            countDownTimer.Tick += (sender, args) =>
-            {
-                time = time.AddSeconds(-1);
-                Time = time.ToString("mm:ss");
-            };
-
-            countDownTimer.Start();
         }
     }
 }

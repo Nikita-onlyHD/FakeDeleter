@@ -8,7 +8,7 @@
     Width="600">
     <Grid>
         <Grid.Resources>
-            <Style TargetType="Button">
+            <Style TargetType="controls:JumpButton">
                 <Setter Property="Margin" Value="4" />
                 <Setter Property="Padding" Value="4" />
             </Style>
@@ -21,10 +21,8 @@
                 <Setter Property="Margin" Value="4" />
             </Style>
         </Grid.Resources>
-        
+
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -38,27 +36,20 @@
         <ListView
             Grid.Row="0"
             Grid.Column="0"
-            Grid.RowSpan="3"
             ItemsSource="{Binding Dirs}"/>
         
         <ListView
             Grid.Row="0"
             Grid.Column="1"
-            Grid.RowSpan="3"
             ItemsSource="{Binding Files}"/>
-        
+
         <TextBlock
             Grid.Row="0"
             Grid.Column="2"
             Text="BB"/>
-        
-        <TextBlock
-            Grid.Row="1"
-            Grid.Column="2"
-            Text="{Binding Time}"/>
 
         <ProgressBar
-            Grid.Row="3"
+            Grid.Row="1"
             Grid.Column="0"
             Grid.ColumnSpan="2"
             Minimum="0"
@@ -66,7 +57,7 @@
             Value="{Binding Progress}"/>
 
         <controls:JumpButton
-            Grid.Row="3"
+            Grid.Row="1"
             Grid.Column="2"
             x:Name="Jump"
             Content="Отмена"/>
