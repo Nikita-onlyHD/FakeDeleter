@@ -25,14 +25,6 @@ namespace FakeDeleter.Views
         public MainView()
         {
             InitializeComponent();
-
-            DataContext = new MainViewModel();
-
-            Jump.MouseOver += () => 
-            {
-                Left = rnd.NextDouble() * (System.Windows.SystemParameters.PrimaryScreenWidth - Width);
-                Top = rnd.NextDouble() * (System.Windows.SystemParameters.PrimaryScreenHeight - Height);
-            };
         }
     }
 }

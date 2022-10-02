@@ -13,6 +13,11 @@ namespace FakeDeleter.ViewModels
 {
     internal class MainViewModel : INotifyPropertyChanged
     {
+        private readonly StartupViewModel startupViewModel = new();
+        private readonly FilesViewModel filesViewModel = new();
+
+        private static readonly Random rnd = new();
+
         #region Properties
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -21,115 +26,64 @@ namespace FakeDeleter.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        public ObservableCollection<string> Dirs { get; } = new();
-        public ObservableCollection<string> Files { get; } = new();
-
-        private int progress;
-        public int Progress
+        private object? content;
+        public object? Content
         {
-            get => progress;
+            get => content;
             set
             {
-                if (progress != value)
+                if (content != value)
                 {
-                    progress = value;
-                    Changed(nameof(Progress));
+                    content = value;
+                    Changed(nameof(Content));
                 }
             }
         }
 
-        private int total;
-        public int Total
+        private double randomLeft;
+        public double RandomLeft
         {
-            get => total;
+            get => randomLeft;
             set
             {
-                if (total != value)
+                if (randomLeft != value)
                 {
-                    total = value;
-                    Changed(nameof(Total));
+                    randomLeft = value;
+                    Changed(nameof(RandomLeft));
                 }
             }
         }
-        #endregion
 
-        #region Commands
-        public Command LookupDirectoryCommand { get; }
-        private bool IsLookupDirectoryRunning = false;
-        #endregion
-
-        #region Timers
-        private DispatcherTimer dirsTimer;
-        private DispatcherTimer filesTimer;
+        private double randomTop;
+        public double RandomTop
+        {
+            get => randomTop;
+            set
+            {
+                if (randomTop != value)
+                {
+                    randomTop = value;
+                    Changed(nameof(RandomTop));
+                }
+            }
+        }
         #endregion
 
         public MainViewModel()
         {
-            dirsTimer = new();
-            filesTimer = new();
+            Content = startupViewModel;
 
-            dirsTimer.Interval = TimeSpan.FromMilliseconds(20);
-            filesTimer.Interval = TimeSpan.FromMilliseconds(20);
-
-            LookupDirectoryCommand = new(async (_) => await LookupDirectoryAsync(), (_) => !IsLookupDirectoryRunning);
-
-            LookupDirectoryCommand.Execute(null);
-        }
-
-        private async Task LookupDirectoryAsync()
-        {
-            IsLookupDirectoryRunning = true;
-
-            Dirs.Clear();
-            Files.Clear();
-
-            List<string> dirs = (await Disc.GetDirsAsync($"{Environment.ExpandEnvironmentVariables("%USERPROFILE%")}\\Videos")).ToList();
-            List<string> files = new();
-
-            Total = await Disc.TotalFilesCountAsync($"{Environment.ExpandEnvironmentVariables("%USERPROFILE%")}\\Videos");
-
-            dirsTimer.Tick += async (sender, args) =>
+            startupViewModel.ButtonPressed += () =>
             {
-                if (dirs.Count > 0)
-                {
-                    Files.Clear();
-
-                    //Progress = 0;
-
-                    files = (await Disc.GetFilesAsync(dirs.First())).ToList();
-                    //Total = files.Count;
-
-                    Dirs.Add(dirs.First());
-                    dirs.Remove(dirs.First());
-
-                    dirsTimer.Stop();
-                    filesTimer.Start();
-                }
-                else
-                {
-                    dirsTimer.Stop();
-                    IsLookupDirectoryRunning = false;
-                }
+                Content = filesViewModel;
+                filesViewModel.LookupDirectoryCommand.Execute(null);
             };
 
-            filesTimer.Tick += (sender, args) =>
+            filesViewModel.Jumped += () =>
             {
-                if (files.Count > 0)
-                {
-                    //Progress = Files.Count;
-                    Progress += 1;
-
-                    Files.Add(files.First());
-                    files.Remove(files.First());
-                }
-                else
-                {
-                    filesTimer.Stop();
-                    dirsTimer.Start();
-                }
+                RandomLeft = rnd.NextDouble()* (System.Windows.SystemParameters.PrimaryScreenWidth - 600.0);
+                RandomTop = rnd.NextDouble()* (System.Windows.SystemParameters.PrimaryScreenHeight - 440.0);
             };
-
-            dirsTimer.Start();
         }
     }
 }
