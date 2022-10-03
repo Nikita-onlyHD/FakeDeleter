@@ -1,5 +1,4 @@
-﻿using FakeDeleter.ViewModels;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace FakeDeleter.Views
 {
